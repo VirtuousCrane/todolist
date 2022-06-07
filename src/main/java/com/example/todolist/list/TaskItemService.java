@@ -22,9 +22,8 @@ public class TaskItemService {
     }
 
     public TaskItem getTaskById(Long id) {
-        TaskItem item = taskRepository.findById(id)
+        return taskRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Task Item with id = " + id + " does not exist"));
-        return item;
     }
 
     public void addTask(TaskItem item) {
