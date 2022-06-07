@@ -1,5 +1,7 @@
 package com.example.todolist.list;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.hibernate.mapping.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +11,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.Rollback;
+
+import java.util.HashMap;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +47,13 @@ class TaskItemControllerTest {
 
     @Test
     void getTaskById() {
+        //when
+        long id = 10;
+        given(taskRepository.existsById(id))
+                .willReturn(true);
+        underTest.getTaskById(id);
+        //then
+        verify(taskRepository).findById(id);
     }
 
     @Test
@@ -67,33 +81,38 @@ class TaskItemControllerTest {
 
     @Test
     void updateTask() {
-//        //given
-//        TaskItem initialTaskItem = new TaskItem(
-//                1L,
-//                "Testing Subject",
-//                "Testing Body",
-//                status.PENDING
-//        );
-//
-//        TaskItem updateTaskItem = new TaskItem(
-//                1L,
-//                "Update Testing Subject",
-//                "Update Testing Body",
-//                status.DONE
-//        )
-//        //when
-//        underTest.addTask(initialTaskItem);
-//        underTest.updateTask(updateTaskItem);
-//        //then
-//        ArgumentCaptor<TaskItem> taskItemArgumentCaptor =
-//                ArgumentCaptor.forClass(TaskItem.class);
-//
-//        verify(taskRepository)
-//                .save(taskItemArgumentCaptor.capture());
-//
-//        TaskItem capturedTaskItem = taskItemArgumentCaptor.getValue();
-//
-//        assertThat(capturedTaskItem).isEqualTo(taskItem);
+        //given
+        TaskItem initialTaskItem = new TaskItem(
+                1L,
+                "Testing Subject",
+                "Testing Body",
+                status.PENDING
+        );
+
+        HashMap<String, String> updateHashMap = new HashMap<>();
+        updateHashMap.put("subject","Update Testing Subject");
+        updateHashMap.put("body", "Update Testing Body");
+        updateHashMap.put("status", "DONE");
+
+        TaskItem updateTaskItem = new TaskItem(
+                1L,
+                "Update Testing Subject",
+                "Update Testing Body",
+                status.DONE
+        );
+        underTest.addTask(initialTaskItem);
+        //when
+        underTest.updateTask(1L, updateHashMap);
+        //then
+        ArgumentCaptor<TaskItem> taskItemArgumentCaptor =
+                ArgumentCaptor.forClass(TaskItem.class);
+
+        verify(taskRepository)
+                .save(taskItemArgumentCaptor.capture());
+
+        TaskItem capturedTaskItem = taskItemArgumentCaptor.getValue();
+
+        assertThat(capturedTaskItem).isEqualTo(updateTaskItem);
     }
 
     @Test
