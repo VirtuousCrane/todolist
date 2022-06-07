@@ -9,9 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
@@ -27,9 +30,21 @@ class TaskItemServiceTest {
     void setUp() {
         underTest = new TaskItemService(taskRepository);
     }
+    @Test
     void canGetAllTask(){
         underTest.getAllTasks();
         verify(taskRepository).findAll();
+    }
+
+    @Test
+    void getTaskById() {
+        long id = 1;
+        final TaskItem taskItem = new TaskItem(id,"Test subject", "Test body", TaskStatus.DONE);
+        doReturn(Optional.of(taskItem)).when(taskRepository).findById(id);
+        final TaskItem taskService = underTest.getTaskById(id);
+        assertEquals(taskItem.getSubject(), taskService.getSubject());
+        assertEquals(taskItem.getBody(), taskService.getBody());
+        assertEquals(taskItem.getStatus(), taskService.getStatus());
     }
     @Test
     void canAddTask() {
@@ -48,8 +63,9 @@ class TaskItemServiceTest {
     @Test
     @Rollback(value = false)
     void updateTask() {
-        
+
     }
+
     @Test
     void deleteTask() {
         long id = 1;
@@ -59,5 +75,6 @@ class TaskItemServiceTest {
 
         verify(taskRepository).deleteById(id);
     }
+
 
 }
