@@ -41,8 +41,8 @@ public class TaskItemService {
     @Transactional
     public void updateTask(Long id, String title, String body, String status) {
         TaskItem item = taskRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Task with ID " + id + " does not exist"));
-
+                .orElse(null);
+//                .orElseThrow(() -> new IllegalStateException("Task with ID " + id + " does not exist"));
         if (title != null &&
             title.length() > 0 &&
             !Objects.equals(item.getSubject(), title)) {
