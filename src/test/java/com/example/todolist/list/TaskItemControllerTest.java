@@ -20,24 +20,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TaskItemControllerTest {
-    @Mock
-    private TaskRepository taskRepository;
-    @Mock
-    private TaskItemService taskItemService;
+
+    @Mock private TaskRepository taskRepository;
+
+    @Mock private TaskItemService taskItemService;
     private TaskItemController underTest;
 
     private TaskStatus status;
 
     @BeforeEach
     void setUp(){
-        taskItemService = new TaskItemService(taskRepository);
         underTest = new TaskItemController(taskItemService);
     }
 
-    @Test
+    @Test()
     void getAllTasks() {
         //when
         underTest.getAllTasks();
@@ -45,13 +45,15 @@ class TaskItemControllerTest {
         verify(taskRepository).findAll();
     }
 
-    @Test
+    @Test()
     void getTaskById() {
         //when
         long id = 10;
-        given(taskRepository.existsById(id))
-                .willReturn(true);
+        //given(taskRepository.existsById(id))
+        //        .willReturn(true);
+
         underTest.getTaskById(id);
+
         //then
         verify(taskRepository).findById(id);
     }
@@ -82,37 +84,31 @@ class TaskItemControllerTest {
     @Test
     void updateTask() {
         //given
-        TaskItem initialTaskItem = new TaskItem(
-                1L,
-                "Testing Subject",
-                "Testing Body",
-                status.PENDING
-        );
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "DONE";
 
-        HashMap<String, String> updateHashMap = new HashMap<>();
-        updateHashMap.put("subject","Update Testing Subject");
-        updateHashMap.put("body", "Update Testing Body");
-        updateHashMap.put("status", "DONE");
+        HashMap<String, String> map = new HashMap();
+        map.put("subject", subject);
+        map.put("body", body);
+        map.put("status", status);
 
-        TaskItem updateTaskItem = new TaskItem(
-                1L,
-                "Update Testing Subject",
-                "Update Testing Body",
-                status.DONE
-        );
-        underTest.addTask(initialTaskItem);
+
         //when
-        underTest.updateTask(1L, updateHashMap);
+        underTest.updateTask(id, map);
+
         //then
-        ArgumentCaptor<TaskItem> taskItemArgumentCaptor =
-                ArgumentCaptor.forClass(TaskItem.class);
+        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> statusCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(taskRepository)
-                .save(taskItemArgumentCaptor.capture());
-
-        TaskItem capturedTaskItem = taskItemArgumentCaptor.getValue();
-
-        assertThat(capturedTaskItem).isEqualTo(updateTaskItem);
+        verify(taskItemService).updateTask(idCaptor.capture(), subjectCaptor.capture(), bodyCaptor.capture(), statusCaptor.capture());
+        assertEquals(id, idCaptor.getValue());
+        assertEquals(subject, subjectCaptor.getValue());
+        assertEquals(body, bodyCaptor.getValue());
+        assertEquals(status, statusCaptor.getValue());
     }
 
     @Test
