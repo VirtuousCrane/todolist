@@ -1,35 +1,20 @@
 package com.example.todolist.list;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import org.hibernate.mapping.Map;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.annotation.Rollback;
-
 import java.util.HashMap;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TaskItemControllerTest {
-
-    @Mock private TaskRepository taskRepository;
-
     @Mock private TaskItemService taskItemService;
     private TaskItemController underTest;
-
     private TaskStatus status;
 
     @BeforeEach
@@ -39,24 +24,22 @@ class TaskItemControllerTest {
 
     @Test()
     void getAllTasks() {
-        //when
         underTest.getAllTasks();
-        //then
-        verify(taskRepository).findAll();
+        verify(taskItemService).getAllTasks();
     }
 
     @Test()
-    @Disabled
     void getTaskById() {
-        //when
+        //given
         long id = 10;
-        //given(taskRepository.existsById(id))
-        //        .willReturn(true);
 
+        //when
         underTest.getTaskById(id);
 
         //then
-        verify(taskRepository).findById(id);
+        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(taskItemService).getTaskById(idCaptor.capture());
+        assertEquals(id, idCaptor.getValue());
     }
 
     @Test
@@ -74,8 +57,8 @@ class TaskItemControllerTest {
         ArgumentCaptor<TaskItem> taskItemArgumentCaptor =
                 ArgumentCaptor.forClass(TaskItem.class);
 
-        verify(taskRepository)
-                .save(taskItemArgumentCaptor.capture());
+        verify(taskItemService)
+                .addTask(taskItemArgumentCaptor.capture());
 
         TaskItem capturedTaskItem = taskItemArgumentCaptor.getValue();
 
@@ -114,5 +97,10 @@ class TaskItemControllerTest {
 
     @Test
     void deleteTask() {
+        long id = 10;
+        //when
+        underTest.deleteTask(id);
+        //then
+        verify(taskItemService).deleteTask(id);
     }
 }
