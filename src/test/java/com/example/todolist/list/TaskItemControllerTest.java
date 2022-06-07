@@ -111,5 +111,14 @@ class TaskItemControllerTest {
 
     @Test
     void deleteTask() {
+        long id = 10;
+        given(taskRepository.existsById(id))
+                .willReturn(true);
+
+        //when
+        underTest.deleteTask(id);
+        //then
+
+        verify(taskRepository).deleteById(id);
     }
 }
