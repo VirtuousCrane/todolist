@@ -31,8 +31,10 @@ class TodolistApplicationTests {
 	}
 	@Test
 	void canAddTask() {
-		TaskItem taskItem = new TaskItem("Test subject","Test Body", TaskStatus.DONE);
-
+		TaskItem taskItem = new TaskItem("Test subject",
+				"Test Body",
+				TaskStatus.DONE);
+		
 	}
 
 	@Test
