@@ -46,34 +46,44 @@ class TaskItemTest {
 
     @Test
     void itShouldGetCorrectSubject() {
+        final String result = underTest.getSubject();
         assertEquals("Unit test", underTest.getSubject());
     }
 
     @Test
-    void itShouldSetNewSubject() {
+    void itShouldSetNewSubject() throws NoSuchFieldException, IllegalAccessException {
         underTest.setSubject("Integration test");
-        assertEquals("Integration test", underTest.getSubject());
+        final Field field = underTest.getClass().getDeclaredField("subject");
+        field.setAccessible(true);
+        assertEquals("Integration test", field.get(underTest));
     }
 
     @Test
     void itShouldGetCorrectBody() {
-        assertEquals("Get unit test done by 08/06/2022", underTest.getBody());
+        final String result = underTest.getBody();
+        assertEquals("Get unit test done by 08/06/2022", result);
     }
 
     @Test
-    void itShouldSetNewBody() {
+    void itShouldSetNewBody() throws NoSuchFieldException, IllegalAccessException {
         underTest.setBody("Get integration test done by 10/06/2022");
-        assertEquals("Get integration test done by 10/06/2022", underTest.getBody());
+        final Field field = underTest.getClass().getDeclaredField("body");
+        field.setAccessible(true);
+        assertEquals("Get integration test done by 10/06/2022", field.get(underTest));
     }
 
     @Test
     void itShouldGetCorrectStatus() {
+
+        final TaskStatus result = underTest.getStatus();
         assertEquals(TaskStatus.PENDING, underTest.getStatus());
     }
 
     @Test
-    void itShouldSetNewStatus() {
+    void itShouldSetNewStatus() throws NoSuchFieldException, IllegalAccessException {
         underTest.setStatus(TaskStatus.DONE);
-        assertEquals(TaskStatus.DONE, underTest.getStatus());
+        final Field field = underTest.getClass().getDeclaredField("status");
+        field.setAccessible(true);
+        assertEquals(TaskStatus.DONE, field.get(underTest));
     }
 }
