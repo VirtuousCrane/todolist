@@ -3,6 +3,8 @@ package com.example.todolist.list;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskItemTest {
@@ -19,13 +21,27 @@ class TaskItemTest {
 
     @Test
     void itShouldGetCorrectId() {
-        assertEquals(1L, underTest.getId());
+        //given
+
+        //when
+        final Long result = underTest.getId();
+
+        //then
+        assertEquals(1L, result);
     }
 
     @Test
-    void itShouldSetNewId() {
+    void itShouldSetNewId() throws NoSuchFieldException, IllegalAccessException {
+        //given
+
+        //when
         underTest.setId(2L);
-        assertEquals(2L, underTest.getId());
+
+        //then
+        final Field field = underTest.getClass().getDeclaredField("id");
+        field.setAccessible(true);
+        assertEquals(2L, field.get(underTest));
+
     }
 
     @Test
