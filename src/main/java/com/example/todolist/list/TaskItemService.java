@@ -30,12 +30,13 @@ public class TaskItemService {
         taskRepository.save(item);
     }
 
-    public void deleteTask(Long id) {
+    public boolean deleteTask(Long id) {
         boolean exists = taskRepository.existsById(id);
         if (!exists) {
             throw new IllegalStateException("Task with ID " + id + " does not exist");
         }
         taskRepository.deleteById(id);
+        return true;
     }
 
     @Transactional
