@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 
 
 class TodolistApplicationTests {
-
-
+    @Test
+    void main() {
+        TodolistApplication.main(new String[] {});
+    }
 }
