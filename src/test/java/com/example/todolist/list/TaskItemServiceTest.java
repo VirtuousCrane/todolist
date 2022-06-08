@@ -43,14 +43,39 @@ class TaskItemServiceTest {
 
     @Test
     void getTaskById() {
-        long id = 1;
-        final TaskItem taskItem = new TaskItem(id,"Test subject", "Test body", TaskStatus.DONE);
-        doReturn(Optional.of(taskItem)).when(taskRepository).findById(id);
-        final TaskItem taskService = underTest.getTaskById(id);
-        assertEquals(taskItem.getSubject(), taskService.getSubject());
-        assertEquals(taskItem.getBody(), taskService.getBody());
-        assertEquals(taskItem.getStatus(), taskService.getStatus());
+        // Given
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "PENDING";
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+
+        final TaskItem returnTask = new TaskItem(id, subject, body, statusEnum);
+
+        // When
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(returnTask));
+        final TaskItem task = underTest.getTaskById(id);
+
+        // Then
+        assertEquals(id, task.getId());
+        assertEquals(subject, task.getSubject());
+        assertEquals(body, task.getBody());
+        assertEquals(statusEnum, task.getStatus());
     }
+
+    @Test
+    void getTaskByIdDoesNotExist() {
+
+        //Given
+        Long id = 1L;
+
+        //when
+        assertThatThrownBy(() -> underTest.getTaskById(id))
+                .isInstanceOf(IllegalStateException.class);
+
+    }
+
     @Test
     void canAddTask() {
         TaskItem taskItem = new TaskItem("Test subject",
@@ -115,6 +140,96 @@ class TaskItemServiceTest {
         assertThat(item.getSubject()).isEqualTo(newSubject);
         assertThat(item.getBody()).isEqualTo(newBody);
         assertThat(item.getStatus()).isEqualTo(newStatusEnum);
+
+    }
+
+    @Test
+    void updateTestNull() {
+
+        //given
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "PENDING";
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+
+        String newSubject = null;
+        TaskItem item = new TaskItem(id, subject, body, statusEnum);
+
+        //when
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(item));
+
+        underTest.updateTask(id, null, null, null);
+
+        //then
+        assertThat(item.getSubject()).isEqualTo(subject);
+        assertThat(item.getBody()).isEqualTo(body);
+        assertThat(item.getStatus()).isEqualTo(statusEnum);
+
+    }
+
+    @Test
+    void updateTestSame() {
+
+        //given
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "PENDING";
+
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+
+        TaskItem item = new TaskItem(id, subject, body, statusEnum);
+
+        //when
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(item));
+
+        underTest.updateTask(id, subject, body, status);
+
+        //then
+        assertThat(item.getSubject()).isEqualTo(subject);
+        assertThat(item.getBody()).isEqualTo(body);
+        assertThat(item.getStatus()).isEqualTo(statusEnum);
+
+    }
+
+    @Test
+    void updateTestEmpty() {
+
+        //given
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "PENDING";
+
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+
+        TaskItem item = new TaskItem(id, subject, body, statusEnum);
+
+        //when
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(item));
+
+        underTest.updateTask(id, "", "", status);
+
+        //then
+        assertThat(item.getSubject()).isEqualTo(subject);
+        assertThat(item.getBody()).isEqualTo("");
+        assertThat(item.getStatus()).isEqualTo(statusEnum);
+
+    }
+
+    @Test
+    void updateCheckDoesNotExist() {
+
+        //Given
+        Long id = 1L;
+
+        //when
+        assertThatThrownBy(() -> underTest.updateTask(id, "subject", "body", "DONE"))
+                .isInstanceOf(IllegalStateException.class);
 
     }
 
