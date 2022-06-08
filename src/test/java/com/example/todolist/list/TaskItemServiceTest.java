@@ -1,5 +1,6 @@
 package com.example.todolist.list;
 
+import org.h2.util.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.Optional;
@@ -24,6 +26,8 @@ class TaskItemServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+    @Mock
+    private TaskItem taskItem;
 
     private TaskItemService underTest;
 
@@ -62,8 +66,51 @@ class TaskItemServiceTest {
     }
 
     @Test
+    void updateFindByIdTest() {
+        //given
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "PENDING";
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+
+        //when
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(new TaskItem(id, subject, body, statusEnum)));
+        TaskItem result = taskRepository.findById(id)
+                .orElse(null);
+
+        //then
+        assertEquals(id, result.getId());
+        assertEquals(subject, result.getSubject());
+        assertEquals(body, result.getBody());
+        assertEquals(statusEnum, result.getStatus());
+    }
+
+    @Test
     @Disabled
     void updateTask() {
+
+        //given
+        Long id = 1L;
+        String subject = "Subject";
+        String body = "Body";
+        String status = "DONE";
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(new TaskItem(id, "A", "B", TaskStatus.PENDING)));
+
+        //when
+        underTest.updateTask(id, subject, body, status);
+
+        //then
+        ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
+        verify(taskItem).setSubject(subjectCaptor.capture());
+        assertEquals(subject, subjectCaptor.getValue());
+
+        verify(taskItem).setBody(body);
+        verify(taskItem).setStatus(statusEnum);
 
     }
 
