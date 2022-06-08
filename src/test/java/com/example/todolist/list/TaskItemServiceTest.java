@@ -1,6 +1,7 @@
 package com.example.todolist.list;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,10 +13,10 @@ import org.springframework.test.annotation.Rollback;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +62,7 @@ class TaskItemServiceTest {
     }
 
     @Test
-    @Rollback(value = false)
+    @Disabled
     void updateTask() {
 
     }
@@ -74,6 +75,17 @@ class TaskItemServiceTest {
         underTest.deleteTask(id);
 
         verify(taskRepository).deleteById(id);
+    }
+
+    @Test
+    void deleteWillThrowTask() {
+        //given
+        long id = 1;
+
+        //when
+        assertThatThrownBy(() -> underTest.deleteTask(id))
+                .isInstanceOf(IllegalStateException.class);
+
     }
 
 
