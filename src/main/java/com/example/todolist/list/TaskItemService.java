@@ -50,14 +50,12 @@ public class TaskItemService {
             item.setSubject(title);
         }
 
-        if (body != null &&
-                body.length() >= 0 &&
-                !Objects.equals(item.getBody(), body)) {
+        if (body != null && !Objects.equals(item.getBody(), body)) {
             item.setBody(body);
         }
 
         if (status != null &&
-            !Objects.equals(item.getStatus(), status)) {
+            !Objects.equals(item.getStatus().toString(), status)) {
             TaskStatus statusEnum = TaskStatus.valueOf(status);
             item.setStatus(statusEnum);
         }
