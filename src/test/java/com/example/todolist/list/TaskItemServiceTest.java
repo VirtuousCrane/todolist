@@ -88,29 +88,33 @@ class TaskItemServiceTest {
     }
 
     @Test
-    @Disabled
     void updateTask() {
 
         //given
         Long id = 1L;
         String subject = "Subject";
         String body = "Body";
-        String status = "DONE";
-        TaskStatus statusEnum = TaskStatus.valueOf(status);
+        String status = "PENDING";
 
-        when(taskRepository.findById(id))
-                .thenReturn(Optional.of(new TaskItem(id, "A", "B", TaskStatus.PENDING)));
+        String newSubject = "New Subject";
+        String newBody = "New Body";
+        String newStatus = "DONE";
+
+        TaskStatus statusEnum = TaskStatus.valueOf(status);
+        TaskStatus newStatusEnum = TaskStatus.valueOf(newStatus);
+
+        TaskItem item = new TaskItem(id, subject, body, statusEnum);
 
         //when
-        underTest.updateTask(id, subject, body, status);
+        when(taskRepository.findById(id))
+                .thenReturn(Optional.of(item));
+
+        underTest.updateTask(id, newSubject, newBody, newStatus);
 
         //then
-        ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
-        verify(taskItem).setSubject(subjectCaptor.capture());
-        assertEquals(subject, subjectCaptor.getValue());
-
-        verify(taskItem).setBody(body);
-        verify(taskItem).setStatus(statusEnum);
+        assertThat(item.getSubject()).isEqualTo(newSubject);
+        assertThat(item.getBody()).isEqualTo(newBody);
+        assertThat(item.getStatus()).isEqualTo(newStatusEnum);
 
     }
 
